@@ -19,7 +19,7 @@ function App() {
       switchMap(([x, y, prePos]) => 
         fromEvent(window, 'touchmove').pipe(
           tap(e => console.log(e)),
-          map(mouseEvent => [mouseEvent.clientX - x + prePos[0], mouseEvent.clientY - y + prePos[1]]),
+          map(touchEvent => [touchEvent.changedTouches[0].clientX - x + prePos[0], touchEvent.changedTouches[0].clientY - y + prePos[1]]),
           takeUntil(fromEvent(window, 'touchend'))
         )
       )
