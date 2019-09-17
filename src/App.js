@@ -1,24 +1,43 @@
 import React from 'react';
 import logo from './logo.svg';
 import './App.css';
+import { useEventCallback } from 'rxjs-hooks';
+import {map, withLatestFrom, switchMap, takeUntil, tap} from 'rxjs/operators';
+import { fromEvent } from 'rxjs';
+
+function Dev() {
+
+}
 
 function App() {
+
+  const [clickCallback, [x, y]] = useEventCallback((event$, state$) =>
+    event$.pipe(
+      withLatestFrom(state$),
+      // tap(([event, prePos]) => {event.persist();console.log(event, prePos)}),
+      map(([event, prePos]) => [event.touches[0].clientX, event.touches[0].clientY, prePos]),
+      switchMap(([x, y, prePos]) => 
+        fromEvent(window, 'touchmove').pipe(
+          tap(e => console.log(e)),
+          map(mouseEvent => [mouseEvent.clientX - x + prePos[0], mouseEvent.clientY - y + prePos[1]]),
+          takeUntil(fromEvent(window, 'touchend'))
+        )
+      )
+    ),
+    [0, 0],
+  )
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div className="App" style={{position: 'relative'}} >
+      <h1>{x}, {y}</h1>
+      <div>
+        <div 
+        // onMouseDown={clickCallback}
+        onTouchStart={clickCallback}
+        style={{
+          position: 'absolute',
+          width: '100px',height: '100px', backgroundColor: 'tomato', top: y, left: x}}></div>
+      </div>
     </div>
   );
 }
