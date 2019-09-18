@@ -46,18 +46,15 @@ const styles = {
 /**
  * 
  * @param {{
- * actions: {label: string; action: () => void; color: string;}[];
+ * actions: {label: React.ReactNode; action: () => void; color: string;}[];
  * style: React.CSSProperties;
  * children: React.ReactNode
  * }} props
  */
 export default function SwiperAction ({actions, style, children}) {
-    const [onDrag, [x, y], [preX, preY]] = useDrag([0, 0]);
-
-    const [reset, setReset] = useState(false);
+    const [onDrag, [x], [preX]] = useDrag([0, 0]);
 
     const left = useMemo(() => {
-        console.log(x, preX, reset);
         // 最左位移，也就 action 按钮的总宽度 取反
         const limit = -ACTION_WIDTH * actions.length;
         // 这次位移与上次位移的差值
@@ -76,7 +73,7 @@ export default function SwiperAction ({actions, style, children}) {
         } else {    // 向右划
             return delt > ACTION_WIDTH ? 0 : limit;
         }
-    }, [x, actions, preX, reset]);
+    }, [x, actions, preX]);
 
     const actionButtons = useMemo(() => (
         <div style={styles.actionGroup}>
@@ -96,4 +93,9 @@ export default function SwiperAction ({actions, style, children}) {
             {actionButtons}
         </div>
     );
+}
+
+SwiperAction.defaultProps = {
+    actions: [],
+    style: {},
 }
