@@ -8,7 +8,7 @@ import { fromEvent } from 'rxjs';
  * @returns {[{onTouchStart: (e: any) => void; onMouseDown: (e: any) => void}, [number, number]]}
  */
 function useDrag(initialPostion = [0, 0]) {
-    const [callback, position] = useEventCallback((event$, state$) =>
+    const [callback, [posX, posY, prePos]] = useEventCallback((event$, state$) =>
         event$.pipe(
             withLatestFrom(state$),
             // tap(([event, prePos]) => {event.persist();console.log(event, prePos)}),
@@ -24,22 +24,22 @@ function useDrag(initialPostion = [0, 0]) {
                 if (isTouch) {
                     return fromEvent(window, 'touchmove').pipe(
                         // tap(e => console.log(e)),
-                        map(touchEvent => [touchEvent.changedTouches[0].clientX - x + prePos[0], touchEvent.changedTouches[0].clientY - y + prePos[1]]),
+                        map(touchEvent => [touchEvent.changedTouches[0].clientX - x + prePos[0], touchEvent.changedTouches[0].clientY - y + prePos[1], prePos]),
                         takeUntil(fromEvent(window, 'touchend')),
                     );
                 } else {
                     return fromEvent(window, 'mousemove').pipe(
-                        map(mouseEvent => [mouseEvent.clientX - x + prePos[0], mouseEvent.clientY - y + prePos[1]]),
+                        map(mouseEvent => [mouseEvent.clientX - x + prePos[0], mouseEvent.clientY - y + prePos[1], prePos]),
                         takeUntil(fromEvent(window, 'mouseup')),
                     );
                 }
             })
         ),
-    initialPostion);
+    [...initialPostion, [0, 0]]);
     return [{
         onTouchStart: callback,
         onMouseDown: callback,
-    }, position];
+    }, [posX, posY], prePos];
 }
 
 export default useDrag;
