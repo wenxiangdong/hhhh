@@ -7,6 +7,7 @@ import { fromEvent } from 'rxjs';
 import useDrag from './hooks/use-drag';
 import SwiperAction from './components/SwiperAction';
 import BreakText from './components/BreakText';
+import ShakeHeadPage from './components/ShakeHeadPage';
 
 const actions = [{
   label: '编辑',
@@ -16,17 +17,12 @@ const actions = [{
   action: () => console.log('删除'),
   color: 'tomato',
 }];
-
+const left = <div style={{width: '100vw', height: '100vh', backgroundColor: 'tomato'}}></div>
 function App() {
 
   return (
-    <div className="App" style={{position: 'relative', width: '400px'}} >
-      {/* <SwiperAction actions={actions} >
-        
-      </SwiperAction> */}
-      {/* <SwiperAction actions={actions} ><div style={{textAlign: 'left'}}>联系人A</div></SwiperAction> */}
-      <BreakText>这是{'很长'.repeat(200)}的文本</BreakText>
-      <div>other things</div>
+    <div className="App" >
+      <ShakeHeadPage left={left}>看我靠我靠</ShakeHeadPage>
     </div>
   );
 }
