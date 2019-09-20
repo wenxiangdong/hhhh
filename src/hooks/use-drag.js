@@ -10,10 +10,10 @@ import { useEffect } from 'react';
 const getEventPos = (e) => {
     let pos = [0, 0];
     // console.log(e);
-    if (e instanceof TouchEvent) {
+    if (e.changedTouches) {
         const touch = e.changedTouches[0];
         pos = [touch.clientX, touch.clientY];
-    } else if (e instanceof MouseEvent) {
+    } else {
         pos = [e.clientX, e.clientY];
     }
     return pos;

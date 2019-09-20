@@ -20,9 +20,13 @@ const actions = [{
 const left = <div style={{width: '100vw', height: '100vh', backgroundColor: 'tomato'}}></div>
 function App() {
 
+  const [onDrag, [x, y]] = useDrag();
   return (
     <div className="App" >
-      <ShakeHeadPage left={left}>看我靠我靠</ShakeHeadPage>
+      {/* <div style={{position: 'relative'}}>
+        <div {...onDrag} style={{position: 'absolute', width: '100px', height: '100px', backgroundColor: 'tomato', left: x, top: y}}></div>
+      </div> */}
+      <ShakeHeadPage left={left}>我我我我</ShakeHeadPage>
     </div>
   );
 }
