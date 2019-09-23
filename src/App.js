@@ -13,7 +13,10 @@ const actions = [{
   label: '编辑',
   action: () => console.log('编辑'),
 }, {
-  label: <button>删除</button>,
+  label: '分享',
+  action: () => console.log('删除'),
+}, {
+  label: '删除',
   action: () => console.log('删除'),
   color: 'tomato',
 }];
@@ -23,10 +26,8 @@ function App() {
   const [onDrag, [x, y]] = useDrag();
   return (
     <div className="App" >
-      {/* <div style={{position: 'relative'}}>
-        <div {...onDrag} style={{position: 'absolute', width: '100px', height: '100px', backgroundColor: 'tomato', left: x, top: y}}></div>
-      </div> */}
-      <ShakeHeadPage left={left}>我我我我</ShakeHeadPage>
+      <SwiperAction actions={actions}><div>哈哈</div></SwiperAction>
+      <SwiperAction actions={actions} mode='after' enableAutoClose={true}><div>哈哈</div></SwiperAction>
     </div>
   );
 }

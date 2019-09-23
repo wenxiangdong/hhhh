@@ -70,7 +70,7 @@ function useDrag(initialPostion = [0, 0], onDragEnd) {
                     );
                 }
             }),
-            tap(console.log)
+            // tap(console.log)
         ),
     [...initialPostion, [0, 0]]);
     return [{
