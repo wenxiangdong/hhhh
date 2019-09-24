@@ -60,18 +60,18 @@ const styles = {
     * }} props
     */
 export default function SwiperAction ({children, mode = 'under', ...rest}) {
-    let component;
+    let Component;
     switch(mode) {
         case 'under':
-            component = (<SwiperActionUnder {...rest}>{children}</SwiperActionUnder>);
+            Component = SwiperActionUnder;
             break;
         case 'after':
-            component = (<SwiperActionAfter {...rest}>{children}</SwiperActionAfter>);
+            Component = SwiperActionAfter
             break;
         default:
             throw new Error('mode not supported');
     }
-    return component;
+    return <Component {...rest}>{children}</Component>;
 }
 
 /**
