@@ -8,6 +8,7 @@ import useDrag from './hooks/use-drag';
 import SwiperAction from './components/SwiperAction';
 import BreakText from './components/BreakText';
 import ShakeHeadPage from './components/ShakeHeadPage';
+import "web-animations-js/web-animations-next-lite.min";
 
 const actions = [{
   label: '编辑',
