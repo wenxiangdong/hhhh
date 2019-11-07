@@ -1,0 +1,21 @@
+.MessageBar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    width: 100vw;
+
+    z-index: 10000;
+
+    transition: all .5s ease-in-out;
+
+    padding: 8px;
+    color: white;
+}
+.MessageBar--hidden {
+    transform: translateY(-100%);
+}
+
+.MessageBar--show {
+    transform: translateY(0);
+}

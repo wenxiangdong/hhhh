@@ -24,7 +24,7 @@ const BreakText = ({style, children, lines}) => {
     const [showMore, setShowMore] = useState(false);
     const handleClickShowMore = useCallback(() => {
         setShowMore(pre => !pre);
-    });
+    }, []);
     return (
         <div >
             <input 

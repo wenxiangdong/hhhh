@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import logo from './logo.svg';
 import './App.css';
 import { useEventCallback } from 'rxjs-hooks';
@@ -7,8 +7,9 @@ import { fromEvent } from 'rxjs';
 import useDrag from './hooks/use-drag';
 import SwiperAction from './components/SwiperAction';
 import BreakText from './components/BreakText';
-import ShakeHeadPage from './components/ShakeHeadPage';
 import "web-animations-js/web-animations-next-lite.min";
+import { MessageContext, MessageProvider } from './message/message';
+import Button from './Button';
 
 const actions = [{
   label: '编辑',
@@ -24,12 +25,18 @@ const actions = [{
 const left = <div style={{width: '100vw', height: '100vh', backgroundColor: 'tomato'}}></div>
 function App() {
 
+  const {enqueue} = useContext(MessageContext);
+  
+
   const [onDrag, [x, y]] = useDrag();
   return (
-    <div className="App" >
-      <SwiperAction actions={actions}><div>哈哈</div></SwiperAction>
-      <SwiperAction actions={actions} mode='after' enableAutoClose={true}><div>哈哈</div></SwiperAction>
-    </div>
+    <MessageProvider>
+      <div className="App" >
+        <SwiperAction actions={actions}><div>哈哈</div></SwiperAction>
+        <SwiperAction actions={actions} mode='after' enableAutoClose={true}><div>哈哈</div></SwiperAction>
+        <Button/>
+      </div>
+    </MessageProvider>
   );
 }
 
