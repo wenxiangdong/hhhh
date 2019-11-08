@@ -28,7 +28,6 @@ const MessageBar: React.FC<{message: MessageItem}> = ({message}) => {
     );
 }
 
-const BACK_DURATION = 3000;
 const DEAULT_DURATION = 3000;
 const TRANSITION_TIME = 500;
 export const MessageProvider: React.FC<React.PropsWithChildren> = ({children}) => {
@@ -65,7 +64,7 @@ export const MessageProvider: React.FC<React.PropsWithChildren> = ({children}) =
             showMessage(item);
             setTimeout(checkMessage, item.duration + TRANSITION_TIME);
         }
-    }, [messageList]);
+    }, [messageList, showMessage]);
    
 
     return (
