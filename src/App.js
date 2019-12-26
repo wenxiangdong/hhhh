@@ -10,6 +10,7 @@ import BreakText from './components/BreakText';
 import "web-animations-js/web-animations-next-lite.min";
 import { MessageContext, MessageProvider } from './message/message';
 import Button from './Button';
+import GradientBackground from './components/GradientBackground';
 
 const actions = [{
   label: '编辑',
@@ -32,9 +33,7 @@ function App() {
   return (
     <MessageProvider>
       <div className="App" >
-        <SwiperAction actions={actions}><div>哈哈</div></SwiperAction>
-        <SwiperAction actions={actions} mode='after' enableAutoClose={true}><div>哈哈</div></SwiperAction>
-        <Button/>
+        <GradientBackground />
       </div>
     </MessageProvider>
   );
