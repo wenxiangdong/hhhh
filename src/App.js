@@ -11,6 +11,7 @@ import "web-animations-js/web-animations-next-lite.min";
 import { MessageContext, MessageProvider } from './message/message';
 import Button from './Button';
 import GradientBackground from './components/GradientBackground';
+import ShiningText from './components/ShiningText';
 
 const actions = [{
   label: '编辑',
@@ -33,7 +34,21 @@ function App() {
   return (
     <MessageProvider>
       <div className="App" >
-        <GradientBackground />
+        <div style={{
+          width: '200px',
+          height: '200px',
+          
+        }}>
+          <ShiningText style={{
+            fontSize: '30px',
+            fontWeight: 'bold',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}>
+            React Hooks!
+          </ShiningText>
+        </div>
       </div>
     </MessageProvider>
   );
