@@ -1,100 +1,187 @@
-import React, { useContext, useRef, useState, useEffect } from 'react';
-import logo from './logo.svg';
-import './App.css';
-import { useEventCallback } from 'rxjs-hooks';
-import { map, withLatestFrom, switchMap, takeUntil, tap } from 'rxjs/operators';
-import { fromEvent } from 'rxjs';
-import SwiperAction from './components/SwiperAction';
-import BreakText from './components/BreakText';
-import "web-animations-js/web-animations-next-lite.min";
-import { MessageContext, MessageProvider } from './message/message';
-import Button from './Button';
-import GradientBackground from './components/GradientBackground';
-import VirtualList from './components/VirtualList';
-import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
-import Backend from 'react-dnd-html5-backend'
+import React, {
+  useContext,
+  useRef,
+  useState,
+  useEffect,
+  useLayoutEffect,
+} from "react";
 
-const left = <div style={{ width: '100vw', height: '100vh', backgroundColor: 'tomato' }}></div>
-const ROW_COUNT = 255;
-const ROW_HEIGHT = 50;
-const app = {
-  name: "启动工作",
-  desc: "开启一天的工作",
-  icon: "https://mkpub-release.menkor.com/affair/13200957/avatar/vzR2bVp8mD/small_affair_avatar.jpeg?x-oss-process=image/resize,h_96"
-}
-const category = {
-  name: "分类",
-  apps: Array(3).fill("").map((_, index) => ({ ...app, id: 'app' + index }))
-}
-const result = Array(5).fill("").map((_, index) => ({ ...category, id: "module" + index }));
-function App() {
+const data = Array(20)
+  .fill("")
+  .map((_, index) => index);
 
-  const { enqueue } = useContext(MessageContext);
-  const [apps, setApps] = useState(category.apps);
-  const handleDragEnd = (result) => {
-    const { source: { index: fromIndex }, destination: { index: toIndex } } = result;
-    setApps(preState => {
-      const nextState = Array.from(preState);
-      const [moved] = nextState.splice(fromIndex, 1);
-      console.log(moved);
-      nextState.splice(toIndex, 0, moved);
-      return nextState;
-    })
+/**
+ * 路径动画
+ * 使用FLIP技术实现
+ * @param {React.MutableRefObject<HTMLElement>} ref
+ * @param {{
+ * duration?: Number,
+ * customerBeginAnimations?: AnimationKeyFrame[]
+ * }} [options]
+ */
+const useFLIP = (ref, { duration = 300, customerBeginAnimations } = {}) => {
+  const [position, setPosition] = useState({ left: 0, top: 0 });
+  const firstTimeRef = useRef(true);
+
+  useEffect(() => {
+    const { left, top } = ref.current.getBoundingClientRect();
+    setPosition({ left, top });
+  }, []);
+
+  useLayoutEffect(() => {
+    if (!ref.current) return;
+    const { left, top } = ref.current.getBoundingClientRect();
+    const { left: prevLeft, top: prevTop } = position;
+    const invert = {
+      left: prevLeft - left,
+      top: prevTop - top,
+    };
+    if (invert.left === 0 && invert.top === 0) return;
+
+    let keyframes = [
+      {
+        transform: `translate(${invert.left}px, ${invert.top}px)`,
+      },
+      {
+        transform: "translate(0, 0)",
+      },
+    ];
+    // 首次动画处理，即刚出现
+    if (firstTimeRef.current) {
+      keyframes = customerBeginAnimations || keyframes;
+      firstTimeRef.current = false;
+    }
+
+    const animation = ref.current.animate(keyframes, {
+      duration,
+      easing: "cubic-bezier(0,0,0.32,1)",
+    });
+    animation.onfinish = () => {
+      setPosition({ left, top });
+    };
+    return () => {
+      if (!animation.finished) {
+        animation.cancel();
+      }
+    };
+  });
+};
+const Item = ({ value, onClick }) => {
+  const ref = useRef();
+  useFLIP(ref, {
+    duration: TIME,
+    customerBeginAnimations: [
+      {
+        opacity: 0,
+        transform: "scale(0)",
+      },
+      {
+        opacity: 1.0,
+        transform: "scale(1)",
+      },
+    ],
+  });
+  return (
+    <div
+      ref={ref}
+      onClick={onClick}
+      style={{
+        width: 50,
+        height: 50,
+        textAlign: "center",
+        background: "tomato",
+        margin: 8,
+      }}
+    >
+      {value}
+    </div>
+  );
+};
+
+const throttle = (fn, time = 300) => {
+  let last = 0;
+  return function () {
+    const now = Date.now();
+    if (now - last > time) {
+      fn.apply(null, arguments);
+      last = now;
+    }
+  };
+};
+
+const debounce = (fn, time = 300) => {
+  let timer = null;
+  return function () {
+    const args = arguments;
+    clearTimeout(timer);
+    timer = setTimeout(() => {
+      fn.apply(null, args);
+    }, time);
+  };
+};
+
+const shuffle = (list = []) => {
+  const result = Array.from(list);
+  for (let i = result.length - 1; i > 0; i--) {
+    const r = Math.floor(Math.random() * i);
+    const removed = result.splice(r, 1, result[i]);
+    result[i] = removed;
   }
-  return (
-    <MessageProvider>
+  return result;
+};
 
-      <DragDropContext onDragEnd={handleDragEnd}>
-        <Droppable droppableId="list">
-          {(provided) => (
-            <div
-              ref={provided.innerRef}
-              className="App"
-              style={{ backgroundColor: "#eeeeee" }}
-              {...provided.droppableProps} >
-              {
-                apps.map((app, index) => (
-                  <Item key={app.id} id={app.id} index={index} />
-                ))
-              }
-              {provided.placeholder}
-            </div>
-          )}
-        </Droppable>
-      </DragDropContext>
-    </MessageProvider>
+const TIME = 300;
+
+function App() {
+  const [items, setItems] = useState(() =>
+    Array(20)
+      .fill("")
+      .map((_, index) => index)
+  );
+  return (
+    <div>
+      <div
+        style={{
+          display: "flex",
+          flexWrap: "wrap",
+          width: "70%",
+          border: "1px gray solid",
+          overflow: "hidden",
+        }}
+      >
+        {items.map((item, index) => (
+          <Item
+            key={item}
+            value={item}
+            onClick={() => {
+              setItems((preItems) => {
+                preItems.splice(index, 1);
+                return [...preItems];
+              });
+            }}
+          />
+        ))}
+      </div>
+      <button
+        onClick={() => {
+          setItems((preItems) => {
+            const added = Array(5)
+              .fill(0)
+              .map(() => Math.random().toString(32).slice(-4));
+            return [...added, ...preItems];
+          });
+        }}
+      >
+        add
+      </button>
+      <button
+        onClick={debounce(() => {
+          setItems((prev) => shuffle(prev));
+        }, TIME)}
+      >
+        shuffle
+      </button>
+    </div>
   );
 }
-
-
-const Item = React.memo(({ id, index }) => {
-  const [dragDisabled, setDragDisabled] = useState(true);
-
-
-
-  return (
-    <Draggable draggableId={id} index={index} isDragDisabled={dragDisabled}>
-      {(provided) => (
-        <div
-          ref={provided.innerRef}
-          style={{
-            width: 50,
-            height: 50
-          }}
-          {...provided.draggableProps}
-          {...provided.dragHandleProps}>
-          <span>
-            {id}
-          </span>
-          <span 
-          onMouseLeave={() => {setDragDisabled(true)}}
-          onMouseEnter={() => {setDragDisabled(false)}}>
-            handler
-          </span>
-        </div>
-      )}
-    </Draggable>
-  );
-})
-
 export default App;
